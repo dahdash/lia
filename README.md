@@ -9,7 +9,7 @@ It comes as two front-ends over one tool layer:
 - a **Persian chat web UI** with a live health sidebar and alerts;
 - an **MCP server**, so Claude Desktop / Cursor / any MCP client can use the same tools with the same safety rules.
 
-🎬 **Demo video (~5 min):** _link added after recording_
+🎬 **Demo video (~5 min):** [Watch on Telegram](https://t.me/+gi95ql-opz83NGVk) (opens the channel; join to watch)
 
 ## Quick start
 
