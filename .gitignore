@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+node_modules/
+__pycache__/
+.venv/
+dist/
+*.log
+.DS_Store
+.lia/
+*.egg-info/
+.pytest_cache/

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>لیایار — دستیار هوشمند لیارا</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f6fb; --panel: #ffffff; --ink: #1c2333; --muted: #6b7489; --line: #e3e7f0;
+  --brand: #2f6bff; --brand-ink: #fff; --ok: #12a150; --warn: #c98500; --bad: #d93a3a;
+  --user: #2f6bff; --bot: #ffffff; --code: #eef1f8; --shadow: 0 1px 3px rgba(20,30,60,.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f131c; --panel: #171c28; --ink: #e6e9f2; --muted: #8d96ab; --line: #262d3d;
+    --brand: #5b8cff; --bot: #1b2130; --code: #232a3b; --shadow: none;
+  }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--ink); font: 15px/1.8 Vazirmatn, Tahoma, sans-serif; }
+.app { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
+aside { background: var(--panel); border-inline-end: 1px solid var(--line); padding: 20px; overflow-y: auto; }
+.brand { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.logo { width: 38px; height: 38px; border-radius: 11px; background: var(--brand); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 20px; }
+.brand h1 { font-size: 18px; margin: 0; }
+.brand p { margin: 0; font-size: 12px; color: var(--muted); }
+.sec { display: flex; justify-content: space-between; align-items: center; margin: 18px 0 8px; font-size: 13px; color: var(--muted); font-weight: 500; }
+.sec button { background: none; border: 0; color: var(--brand); cursor: pointer; font: inherit; }
+.card { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; background: var(--bg); }
+.card .row { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.card .name { font-weight: 700; direction: ltr; }
+.card .meta { font-size: 12px; color: var(--muted); }
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; background: var(--muted); margin-inline-end: 6px; }
+.dot.ok { background: var(--ok); } .dot.bad { background: var(--bad); }
+.bar { height: 5px; background: var(--line); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+.bar i { display: block; height: 100%; background: var(--brand); }
+.alert { font-size: 13px; border: 1px solid var(--line); border-inline-start: 3px solid var(--warn); padding: 6px 10px; margin-bottom: 6px; background: var(--bg); border-radius: 8px; overflow-wrap: anywhere; }
+.alert.bad { border-inline-start-color: var(--bad); } .alert.ok { border-inline-start-color: var(--ok); }
+.alert .when { font-size: 11px; color: var(--muted); }
+.alert p { margin: 0; }
+.alert button { display: block; margin-top: 6px; background: none; border: 1px solid var(--brand); color: var(--brand); border-radius: 8px; padding: 0 8px; font: inherit; font-size: 12px; cursor: pointer; }
+.bar i.warn { background: var(--warn); } .bar i.bad { background: var(--bad); }
+.issue { font-size: 11px; padding: 0 6px; border-radius: 8px; background: var(--warn); color: #fff; margin-inline-start: 4px; }
+.issue.bad { background: var(--bad); }
+.empty { font-size: 13px; color: var(--muted); }
+main { display: flex; flex-direction: column; height: 100vh; min-width: 0; }
+#log { flex: 1; overflow-y: auto; padding: 24px clamp(16px, 5vw, 64px); }
+.msg { max-width: 760px; margin: 0 0 14px; padding: 10px 14px; border-radius: 14px; box-shadow: var(--shadow); overflow-wrap: anywhere; }
+.msg.user { background: var(--user); color: #fff; margin-inline-start: auto; border-end-end-radius: 4px; }
+.msg.bot { background: var(--bot); border: 1px solid var(--line); border-end-start-radius: 4px; }
+.msg.err { background: transparent; border: 1px solid var(--bad); color: var(--bad); }
+.msg p { margin: 0 0 6px; } .msg p:last-child { margin: 0; }
+.msg ul, .msg ol { margin: 4px 0; padding-inline-start: 22px; }
+code { background: var(--code); padding: 1px 6px; border-radius: 5px; font-size: 13px; direction: ltr; unicode-bidi: isolate; }
+.msg.user code { background: rgba(255,255,255,.2); }
+.op { max-width: 760px; font-size: 13px; color: var(--muted); margin: -4px 0 10px; }
+.op summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; }
+.op summary::-webkit-details-marker { display: none; }
+.op pre { direction: ltr; text-align: left; background: var(--code); color: var(--ink); padding: 8px; border-radius: 8px; max-height: 260px; overflow: auto; font-size: 12px; }
+.op .s-ok { color: var(--ok); } .op .s-bad { color: var(--bad); }
+.tag { font-size: 11px; padding: 0 7px; border-radius: 10px; border: 1px solid var(--line); }
+.spin { width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--brand); border-radius: 50%; animation: r .8s linear infinite; display: inline-block; }
+@keyframes r { to { transform: rotate(360deg); } }
+.confirm { max-width: 760px; border: 1.5px solid var(--warn); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; background: var(--panel); }
+.confirm.costly { border-color: var(--bad); }
+.confirm h3 { margin: 0 0 4px; font-size: 14px; }
+.confirm .btns { display: flex; gap: 8px; margin-top: 10px; }
+.btn { border: 0; border-radius: 9px; padding: 6px 16px; font: inherit; cursor: pointer; }
+.btn.yes { background: var(--brand); color: var(--brand-ink); }
+.btn.no { background: var(--code); color: var(--ink); }
+.btn:disabled { opacity: .5; cursor: default; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 clamp(16px, 5vw, 64px) 8px; }
+.chip { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 18px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; }
+form { display: flex; gap: 8px; padding: 12px clamp(16px, 5vw, 64px) 18px; }
+textarea { flex: 1; resize: none; border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit; background: var(--panel); color: var(--ink); height: 48px; line-height: 1.6; overflow-y: hidden; }
+form .btn { padding: 0 22px; }
+@media (max-width: 800px) {
+  .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: auto; }
+  aside { max-height: 34vh; border: 0; border-bottom: 1px solid var(--line); }
+  main { height: 66vh; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><div class="logo">ل</div><div><h1>لیایار</h1><p>دستیار هوشمند استقرار و عیب‌یابی روی لیارا</p></div></div>
+    <div class="sec"><span>سرویس‌های من</span><button id="refresh">به‌روزرسانی</button></div>
+    <div id="apps"><div class="empty">در حال بارگذاری…</div></div>
+    <div class="sec"><span>هشدارهای پایش خودکار</span></div>
+    <div id="alerts"><div class="empty">هشداری نیست.</div></div>
+    <div class="empty" id="watchnote"></div>
+    <div class="sec"><span>راهنمای سطح خطر</span></div>
+    <div class="empty">خواندن وضعیت و لاگ‌ها خودکار انجام می‌شود. هر تغییر (ری‌استارت، دیپلوی، متغیر محیطی) و هر کار هزینه‌دار فقط با تأیید شما اجرا می‌شود.</div>
+  </aside>
+  <main>
+    <div id="log"></div>
+    <div class="chips" id="chips"></div>
+    <form id="f"><textarea id="t" placeholder="مثلاً: سایتم خراب شده، بررسی کن"></textarea><button class="btn yes" id="send">ارسال</button></form>
+  </main>
+</div>
+<script>
+const SID = (() => { try { let s = sessionStorage.getItem('lia-sid'); if (!s) { s = Math.random().toString(36).slice(2); sessionStorage.setItem('lia-sid', s); } return s; } catch { return Math.random().toString(36).slice(2); } })();
+const $ = (id) => document.getElementById(id);
+const log = $('log');
+const fa = (n) => Number(n).toLocaleString('fa-IR');
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function md(src) {
+  const lines = esc(src).split('\n'); let html = '', list = null;
+  const inline = (s) => s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  for (const raw of lines) {
+    const l = raw.trim(); const ul = l.match(/^[-*•]\s+(.*)/), ol = l.match(/^(\d+|[۰-۹]+)[.)]\s+(.*)/);
+    if (ul || ol) { const t = ul ? 'ul' : 'ol'; if (list !== t) { if (list) html += `</${list}>`; html += `<${t}>`; list = t; } html += `<li>${inline(ul ? ul[1] : ol[2])}</li>`; continue; }
+    if (list) { html += `</${list}>`; list = null; }
+    if (l.startsWith('#')) html += `<p><b>${inline(l.replace(/^#+\s*/, ''))}</b></p>`;
+    else if (l) html += `<p>${inline(l)}</p>`;
+  }
+  return html + (list ? `</${list}>` : '');
+}
+function add(el) { log.appendChild(el); log.scrollTop = log.scrollHeight; return el; }
+function div(cls, html) { const d = document.createElement('div'); d.className = cls; d.innerHTML = html; return d; }
+
+const ops = {}; let thinking = null;
+function stopThinking() { if (thinking) { thinking.remove(); thinking = null; } }
+function handle(ev) {
+  if (ev.type !== 'thinking') stopThinking();
+  switch (ev.type) {
+    case 'thinking': if (!thinking) thinking = add(div('op', '<span class="spin"></span> لیایار در حال فکر کردن…')); break;
+    case 'message': add(div('msg bot', md(ev.text))); break;
+    case 'error': add(div('msg err', esc(ev.text))); break;
+    case 'tool_start': {
+      const d = document.createElement('details'); d.className = 'op';
+      d.innerHTML = `<summary><span class="spin"></span> ${esc(ev.label)} <span class="tag">${ev.risk === 'read' ? 'خودکار' : 'تأییدشده'}</span></summary><pre>${esc(JSON.stringify(ev.args, null, 1))}</pre>`;
+      ops[ev.id] = add(d); break;
+    }
+    case 'tool_result': {
+      const d = ops[ev.id]; if (!d) break;
+      d.querySelector('.spin').outerHTML = ev.ok ? '<span class="s-ok">✓</span>' : '<span class="s-bad">✗</span>';
+      if (!ev.ok) d.querySelector('summary').insertAdjacentHTML('beforeend', ` <span class="s-bad">${esc(ev.result.error || 'خطا')}</span>`);
+      d.insertAdjacentHTML('beforeend', `<pre>${esc(JSON.stringify(ev.result, null, 1)).slice(0, 4000)}</pre>`);
+      if (ev.risk !== 'read') loadStatus(); break;
+    }
+    case 'confirm': {
+      const c = add(div('confirm' + (ev.risk === 'costly' ? ' costly' : ''),
+        `<h3>${ev.risk === 'costly' ? '💳 نیاز به تأیید — عملیات هزینه‌دار' : '⚠️ نیاز به تأیید — عملیات حساس'}</h3><div>${md(ev.summary)}</div>
+         <div class="btns"><button class="btn yes">تأیید و اجرا</button><button class="btn no">لغو</button></div>`));
+      const [y, n] = c.querySelectorAll('button');
+      const answer = (ok) => { y.disabled = n.disabled = true; c.querySelector('.btns').insertAdjacentHTML('beforeend', `<span class="empty">${ok ? 'تأیید شد' : 'لغو شد'}</span>`); stream('/api/confirm', { session: SID, id: ev.id, approve: ok }); };
+      y.onclick = () => answer(true); n.onclick = () => answer(false); break;
+    }
+    case 'declined': add(div('op', '✗ لغو شد؛ این عملیات اجرا نشد.')); break;
+  }
+}
+
+let busy = false;
+async function stream(url, body) {
+  busy = true; $('send').disabled = true;
+  try {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const reader = r.body.getReader(); const dec = new TextDecoder(); let buf = '';
+    for (;;) {
+      const { done, value } = await reader.read(); if (done) break;
+      buf += dec.decode(value, { stream: true }); let i;
+      while ((i = buf.indexOf('\n')) >= 0) { const line = buf.slice(0, i); buf = buf.slice(i + 1); if (line.trim()) handle(JSON.parse(line)); }
+    }
+  } catch (e) { handle({ type: 'error', text: 'ارتباط با سرور قطع شد: ' + e.message }); }
+  stopThinking(); busy = false; $('send').disabled = false;
+}
+function send(text) {
+  text = text.trim(); if (!text || busy) return;
+  add(div('msg user', md(text))); $('t').value = '';
+  stream('/api/chat', { session: SID, message: text });
+}
+$('f').onsubmit = (e) => { e.preventDefault(); send($('t').value); };
+$('t').onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send($('t').value); } };
+
+['وضعیت سرویس‌هایم چطور است؟', 'پروژه‌ی shop را آنلاین کن', 'سایتم خراب شده، بررسی کن', 'سایتم کند شده', 'لیایار چه کارهایی نمی‌تواند بکند؟']
+  .forEach((s) => { const b = document.createElement('button'); b.className = 'chip'; b.type = 'button'; b.textContent = s; b.onclick = () => send(s); $('chips').appendChild(b); });
+
+const ISSUE = { down: ['از دسترس خارج', 'bad'], errors: ['خطا در لاگ', ''], ram: ['رم بالا', ''], cpu: ['پردازنده بالا', ''] };
+function meter(label, v) {
+  if (v == null) return '';
+  const w = Math.max(0, Math.min(100, v)), cls = v >= 95 ? 'bad' : v >= 85 ? 'warn' : '';
+  return `<div class="meta">${label} ${fa(v)}٪ از ظرفیت پلن</div><div class="bar"><i class="${cls}" style="width:${w}%"></i></div>`;
+}
+const clock = (t) => new Date(t * 1000).toLocaleTimeString('fa-IR', { hour: '2-digit', minute: '2-digit' });
+async function loadStatus(refresh) {
+  try {
+    const s = await (await fetch(refresh ? '/api/status/refresh' : '/api/status', { method: refresh ? 'POST' : 'GET' })).json();
+    $('apps').innerHTML = s.apps.length ? s.apps.map((a) => {
+      const p = a.probe; const st = p ? (p.ok ? `پاسخ ${fa(p.status)} در ${fa(p.ms)} میلی‌ثانیه` : `خطا: ${esc(p.status || p.error || '')}`) : 'خاموش';
+      const issues = (a.issues || []).map((k) => ISSUE[k] ? `<span class="issue ${ISSUE[k][1]}">${ISSUE[k][0]}</span>` : '').join('');
+      return `<div class="card"><div class="row"><span><span class="dot ${a.healthy ? 'ok' : 'bad'}"></span><span class="name">${esc(a.name)}</span></span><span class="meta">${esc(a.plan || '')}</span></div>
+        <div class="meta">${st}${issues}</div>${meter('رم', a.ram_pct)}${meter('پردازنده', a.cpu_pct)}</div>`;
+    }).join('') : '<div class="empty">هنوز اپی ندارید. بگویید «پروژه‌ی shop را آنلاین کن».</div>';
+    $('alerts').innerHTML = s.alerts.length ? s.alerts.slice().reverse().map((a) =>
+      `<div class="alert ${a.level || ''}"><div class="when">${clock(a.at)}${a.app ? ' · ' + esc(a.app) : ''}</div>${md(a.text)}${a.ask ? `<button type="button" data-ask="${esc(a.ask)}">از لیایار بخواه بررسی کند</button>` : ''}</div>`).join('') : '<div class="empty">هشداری نیست.</div>';
+    $('alerts').querySelectorAll('button[data-ask]').forEach((b) => { b.onclick = () => send(b.dataset.ask); });
+    $('watchnote').textContent = `لیایار هر ${fa(s.interval || 60)} ثانیه سایت، مصرف منابع و لاگ‌های خطا را خودکار (فقط خواندنی) بررسی می‌کند؛ API لیارا خودش سرویس هشدار ندارد.`;
+    if (!s.llm_ready && !log.childElementCount) handle({ type: 'error', text: 'کلید مدل زبانی تنظیم نشده است (LLM_API_KEY).' });
+  } catch { $('apps').innerHTML = '<div class="empty">سرور در دسترس نیست.</div>'; }
+}
+$('refresh').onclick = () => loadStatus(true);
+add(div('msg bot', md('سلام! من **لیایار** هستم. می‌توانم سایت شما را روی لیارا آنلاین کنم، وضعیت و مصرف منابعش را بپایم و اگر مشکلی پیش آمد علتش را پیدا و رفع کنم.\nهر کاری که چیزی را تغییر دهد یا هزینه داشته باشد، اول از شما اجازه می‌گیرم.')));
+loadStatus(); setInterval(loadStatus, 30000);
+</script>
+</body>
+</html>

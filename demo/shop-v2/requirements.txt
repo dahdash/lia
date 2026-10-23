@@ -1,0 +1,4 @@
+Flask==3.1.1
+gunicorn==23.0.0
+# gunicorn 23 imports pkg_resources, which setuptools>=81 removed
+setuptools<81
